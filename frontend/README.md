@@ -106,6 +106,11 @@ una story por estado; las páginas se montan con repositorios de mentira, así q
 recorrer sin backend (por ejemplo `Repartidores/MiRutaPage` permite iniciar la ruta y entregar
 cada parada). El panel de accesibilidad (`addon-a11y`) audita cada story con axe-core.
 
+Hay dos formas de verlo, las dos en http://localhost:6006:
+
+- `pnpm storybook`: servidor de desarrollo, con recarga al editar un componente.
+- `docker compose up --build` en la raíz del repositorio: lo sirve ya compilado, sin instalar nada.
+
 ## Decisiones que conviene conocer
 
 - **Sesión en `sessionStorage`.** Sobrevive a una recarga y cada pestaña tiene la suya, lo que

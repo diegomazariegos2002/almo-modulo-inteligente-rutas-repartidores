@@ -39,15 +39,18 @@ La primera vez tarda unos minutos (instala dependencias y compila). Al terminar:
 | Aplicación web      | http://localhost:8080                    |
 | API                 | http://localhost:3000/api                |
 | Swagger             | http://localhost:3000/api/docs           |
+| Storybook           | http://localhost:6006                    |
 | Estado del servicio | http://localhost:3000/api/health         |
 | PostgreSQL          | `localhost:5434`, base `almo_ruta`, esquema `rutas` |
 
 El arranque sigue este orden: PostgreSQL y Redis → `migrator` (aplica las migraciones y siembra
 3 repartidores, 5 órdenes y las cuentas de demostración; termina solo) → `backend` → `frontend`.
 Las migraciones y el seed son idempotentes: se puede levantar el sistema las veces que haga falta.
+Storybook es un servicio aparte que no depende de los demás: es el catálogo de componentes del
+frontend ya compilado (ver [Storybook](#storybook)).
 
 No hay que configurar nada. Si un puerto está ocupado, copiar `.env.example` a `.env` y cambiarlo
-ahí (`FRONTEND_PORT`, `BACKEND_PORT`, `POSTGRES_PORT`).
+ahí (`FRONTEND_PORT`, `BACKEND_PORT`, `STORYBOOK_PORT`, `POSTGRES_PORT`).
 
 Para volver al estado inicial (borra los datos y vuelve a sembrar):
 
@@ -416,6 +419,22 @@ Módulos `Auth`, `Ordenes`, `Repartidores` y `Shared`, cada uno con `Domain`, `A
 
 El menú y las rutas se arman a partir de los permisos del token; el diseño es adaptable a móvil.
 
+### Storybook
+
+Los componentes del frontend se desarrollaron y se revisan aislados en Storybook, disponible en
+http://localhost:6006 al levantar el sistema.
+
+- **115 historias de 28 componentes**, agrupadas por módulo (`Shared`, `Auth`, `Ordenes`,
+  `Repartidores`). Cada historia vive junto a su componente (`*.stories.ts`).
+- Cada componente tiene una historia por estado o variante: cargando, vacío, error de conexión,
+  errores de validación, cada estado de una orden y la vista en móvil.
+- Las **pantallas completas** también tienen historias, montadas con repositorios simulados, así
+  que se pueden recorrer sin backend. Por ejemplo, en `Repartidores/MiRutaPage` se puede iniciar
+  la ruta y entregar cada parada.
+- El panel de accesibilidad (`addon-a11y`) audita cada historia con axe-core.
+
+En desarrollo se arranca con recarga en caliente con `pnpm storybook` (sección 10).
+
 ## 9. Pruebas
 
 ```bash
@@ -518,7 +537,7 @@ El enunciado deja varios puntos abiertos. Así se resolvieron:
 | Asignación segura ante peticiones simultáneas           | Sección 5                                                    |
 | `404` con mensaje amigable                              | `libs/exceptions` (filtro global, mensajes en español e inglés) |
 | Datos precargados: 3 repartidores y 5 órdenes           | `backend/libs/prisma/src/lib/seed`                           |
-| Formulario de orden, vista de ruta y lista con filtro   | `frontend/` (sección 8)                                      |
+| Formulario de orden, vista de ruta y lista con filtro   | `frontend/` (sección 8), con cada componente en Storybook    |
 | Validación de entradas                                  | DTOs con `class-validator` y value objects del dominio       |
 | Docker Compose con un comando                           | `docker-compose.yml`                                         |
 | Arquitectura por capas                                  | Sección 8                                                    |
