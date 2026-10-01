@@ -1,0 +1,25 @@
+# Dependencias
+/node_modules
+
+# Salidas de compilación
+/dist
+/out-tsc
+/storybook-static
+
+# Cachés y reportes de herramientas
+/.angular/cache
+/coverage
+.eslintcache
+*storybook.log
+npm-debug.log
+pnpm-debug.log
+
+# Editores
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.history/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

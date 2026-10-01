@@ -1,0 +1,64 @@
+// Estilos globales: tema de Angular Material y Tailwind. El resto del estilo vive en
+// las plantillas como utilidades de Tailwind.
+@use '@angular/material' as mat;
+@use 'tailwindcss';
+
+// Tipografía del sistema: no depende de fuentes externas.
+$fuente: (system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+
+// El color de marca de Tailwind apunta al token de Material para que los dos
+// sistemas compartan una sola paleta (`bg-primary`, `text-on-primary`).
+@theme {
+  --font-sans: #{$fuente};
+  --color-primary: var(--mat-sys-primary);
+  --color-on-primary: var(--mat-sys-on-primary);
+}
+
+html {
+  color-scheme: light;
+
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$cyan-palette,
+        theme-type: light,
+      ),
+      typography: $fuente,
+      density: 0,
+    )
+  );
+}
+
+body {
+  @apply m-0 min-h-dvh bg-slate-50 font-sans text-slate-900 antialiased;
+}
+
+// Foco visible y uniforme en los controles propios (enlaces, chips, tarjetas
+// seleccionables). Los componentes de Material ya traen su propio indicador.
+.foco-visible:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
+
+// El reinicio de Tailwind pone `border-style: solid` en todos los elementos y eso hace
+// visible el borde derecho de la muesca del campo de Material, que cuenta con que no
+// tenga estilo. Sin esta regla aparece una línea vertical dentro de cada campo.
+.mdc-notched-outline__notch {
+  border-right-style: none;
+}
+
+// Indicador de «en curso» para el interior de un botón. No se usa mat-progress-spinner
+// porque declara un rol y un tabindex propios, y un control no puede anidarse en otro.
+.giro-en-boton {
+  @apply mr-2 inline-block size-4 animate-spin rounded-full border-2 border-current border-t-transparent align-[-3px] motion-reduce:animate-none;
+}
+
+// Material fija el icono en 24 px fuera de las capas CSS, así que una utilidad de
+// Tailwind (que vive dentro de una capa) no puede cambiarle el tamaño.
+@each $medida in (14, 16, 20) {
+  .mat-icon.icono-#{$medida} {
+    width: #{$medida}px;
+    height: #{$medida}px;
+    font-size: #{$medida}px;
+  }
+}

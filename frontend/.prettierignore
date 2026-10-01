@@ -1,0 +1,7 @@
+# Salidas generadas y archivos que mantiene otra herramienta.
+/dist
+/coverage
+/storybook-static
+/.angular
+/node_modules
+pnpm-lock.yaml

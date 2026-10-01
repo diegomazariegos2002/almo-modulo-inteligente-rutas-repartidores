@@ -1,0 +1,24 @@
+# Configuración de pnpm 10 para este paquete.
+
+# node_modules plano, como el de npm. Storybook y el builder de Angular tienen que
+# compartir una única instancia de webpack; con el layout aislado de pnpm cada uno
+# recibe la suya (difieren en sus peer dependencies opcionales) y el build de
+# Storybook falla con "The 'compilation' argument must be an instance of Compilation".
+nodeLinker: hoisted
+
+# Por el mismo motivo se fija la versión de webpack que exige
+# @angular-devkit/build-angular, para que no convivan dos versiones.
+overrides:
+  webpack: 5.105.0
+
+# pnpm 10 no ejecuta los scripts de instalación de las dependencias salvo que se
+# autoricen aquí de forma explícita.
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - esbuild
+  - lmdb
+  - msgpackr-extract
+
+# Su script solo comprueba el binario nativo, que ya llega como dependencia opcional.
+ignoredBuiltDependencies:
+  - unrs-resolver
