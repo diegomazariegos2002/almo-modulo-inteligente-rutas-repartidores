@@ -1,0 +1,35 @@
+{
+  "errors": {
+    "validacion": {
+      "entrada_invalida": "The submitted data is not valid. Check the listed fields."
+    },
+    "auth": {
+      "credenciales_invalidas": "Incorrect email or password.",
+      "no_autenticado": "You must sign in to continue.",
+      "permiso_denegado": "Your role is not allowed to perform this action.",
+      "recurso_ajeno": "You do not have access to this resource."
+    },
+    "rutas": {
+      "orden_no_encontrada": "There is no order with folio {{folio}}.",
+      "repartidor_no_encontrado": "There is no courier with id {{id}}.",
+      "transicion_estado_invalida": "Order {{folio}} is \"{{actual}}\" and cannot move to \"{{solicitado}}\".",
+      "transicion_estado_repetida": "Order {{folio}} is already \"{{actual}}\".",
+      "persistence_error": "We could not complete the operation. Please try again in a moment."
+    },
+    "http": {
+      "solicitud_invalida": "The request is not valid.",
+      "recurso_no_encontrado": "The requested resource does not exist.",
+      "cuerpo_demasiado_grande": "The request body is too large.",
+      "error_interno": "An unexpected error occurred. Please try again later."
+    }
+  },
+  "success": {
+    "rutas": {
+      "orden_asignada": "Order {{folio}} registered and assigned to {{repartidor}}.",
+      "orden_en_cola": "Order {{folio}} registered. No couriers are available: it is pending assignment and will be assigned automatically.",
+      "ruta_iniciada": "Route started with {{paradas}} stop(s) on the way.",
+      "orden_entregada": "Order {{folio}} marked as delivered.",
+      "orden_entregada_ruta_completada": "Order {{folio}} marked as delivered. You completed your route."
+    }
+  }
+}

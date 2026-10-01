@@ -1,0 +1,35 @@
+{
+  "errors": {
+    "validacion": {
+      "entrada_invalida": "Los datos enviados no son válidos. Revisa los campos indicados."
+    },
+    "auth": {
+      "credenciales_invalidas": "Correo o contraseña incorrectos.",
+      "no_autenticado": "Debes iniciar sesión para continuar.",
+      "permiso_denegado": "Tu rol no tiene permiso para realizar esta acción.",
+      "recurso_ajeno": "No tienes acceso a este recurso."
+    },
+    "rutas": {
+      "orden_no_encontrada": "No existe una orden con el folio {{folio}}.",
+      "repartidor_no_encontrado": "No existe un repartidor con el id {{id}}.",
+      "transicion_estado_invalida": "La orden {{folio}} está \"{{actual}}\" y no puede pasar a \"{{solicitado}}\".",
+      "transicion_estado_repetida": "La orden {{folio}} ya está \"{{actual}}\".",
+      "persistence_error": "No pudimos completar la operación. Intenta de nuevo en unos momentos."
+    },
+    "http": {
+      "solicitud_invalida": "La petición no es válida.",
+      "recurso_no_encontrado": "El recurso solicitado no existe.",
+      "cuerpo_demasiado_grande": "El cuerpo de la petición es demasiado grande.",
+      "error_interno": "Ocurrió un error inesperado. Intenta de nuevo más tarde."
+    }
+  },
+  "success": {
+    "rutas": {
+      "orden_asignada": "Orden {{folio}} registrada y asignada a {{repartidor}}.",
+      "orden_en_cola": "Orden {{folio}} registrada. No hay repartidores disponibles: quedó Pendiente de Asignación y se asignará automáticamente.",
+      "ruta_iniciada": "Ruta iniciada con {{paradas}} parada(s) en camino.",
+      "orden_entregada": "Orden {{folio}} marcada como entregada.",
+      "orden_entregada_ruta_completada": "Orden {{folio}} marcada como entregada. Completaste tu ruta."
+    }
+  }
+}
