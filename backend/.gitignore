@@ -1,0 +1,32 @@
+# Salida de compilación
+dist
+tmp
+out-tsc
+
+# Dependencias
+node_modules
+
+# Editores
+/.idea
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# Varios
+/coverage
+npm-debug.log
+.DS_Store
+Thumbs.db
+
+# Nx
+.nx/cache
+.nx/workspace-data
+
+# Variables de entorno reales (nunca se versionan)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Cliente generado por Prisma (se regenera con `pnpm prisma:generate`)
+libs/prisma/src/lib/generated

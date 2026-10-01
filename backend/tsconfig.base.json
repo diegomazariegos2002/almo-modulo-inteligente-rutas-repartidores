@@ -1,0 +1,41 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node10",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "importHelpers": true,
+    "target": "es2022",
+    "module": "esnext",
+    "lib": ["es2022"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@almo/result": ["libs/result/src/index.ts"],
+      "@almo/exceptions": ["libs/exceptions/src/index.ts"],
+      "@almo/exceptions/nestjs": ["libs/exceptions/src/nestjs/index.ts"],
+      "@almo/prisma": ["libs/prisma/src/index.ts"],
+      "@almo/prisma/seed": ["libs/prisma/src/lib/seed/index.ts"],
+      "@almo/transactions": ["libs/transactions/src/index.ts"],
+      "@almo/security": ["libs/security/src/index.ts"],
+      "@almo/security/constants": ["libs/security/src/lib/constants/index.ts"],
+      "@almo/security/password": ["libs/security/src/lib/password/index.ts"],
+      "@almo/redis": ["libs/redis/src/index.ts"],
+      "@almo/health": ["libs/health/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

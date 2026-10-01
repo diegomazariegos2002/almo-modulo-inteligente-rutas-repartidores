@@ -1,0 +1,17 @@
+# Configuración de pnpm v10+ (la clave "pnpm" de package.json ya no se lee).
+autoInstallPeers: true
+
+# pnpm 10 no ejecuta scripts de instalación salvo los declarados aquí.
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@parcel/watcher'
+  - '@prisma/engines'
+  - '@swc/core'
+  - nx
+  - prisma
+  - unrs-resolver
+
+# Scripts de instalación que no hacen falta (solo telemetría / binarios opcionales).
+ignoredBuiltDependencies:
+  - '@scarf/scarf'
+  - less
