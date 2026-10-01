@@ -18,9 +18,10 @@ module.exports = {
       assets: ['./src/assets'],
       optimization: false,
       outputHashing: 'none',
-      // Genera dist/apps/rutas/package.json solo con las dependencias que el servicio usa:
-      // es lo que instala la imagen Docker.
-      generatePackageJson: true,
+      // El package.json que genera Nx omite dependencias que solo se cargan en ejecución
+      // (@prisma/client, pg, joi, tslib). La imagen Docker instala las de producción
+      // desde el package.json de la raíz, con su lockfile.
+      generatePackageJson: false,
       sourceMap: true,
     }),
   ],

@@ -1,0 +1,23 @@
+# Lo que no debe entrar al contexto de construcción de la imagen.
+
+# Se instalan y se compilan dentro de la imagen
+node_modules
+dist
+tmp
+coverage
+.nx
+libs/prisma/src/lib/generated
+
+# Las variables llegan del contenedor, nunca de un .env copiado a la imagen
+.env
+.env.*
+!.env.example
+
+# No aportan nada a la imagen
+.git
+.vscode
+.idea
+*.log
+*.md
+Dockerfile
+.dockerignore
