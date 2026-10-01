@@ -1,0 +1,67 @@
+<div class="flex flex-col gap-5">
+  <header>
+    <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Órdenes</h1>
+    <p class="mt-1 text-sm text-slate-600">
+      Consulta el estado de cada orden y su historial de cambios.
+    </p>
+  </header>
+
+  <app-filtro-estado [estado]="filtro().estado" (cambio)="cambiarEstado($event)" />
+
+  @if (error(); as mensaje) {
+    <app-aviso tipo="error" accion="Reintentar" [mensaje]="mensaje" (accionado)="cargar()" />
+  } @else if (pagina(); as resultado) {
+    @if (resultado.data.length > 0) {
+      <!-- Durante una recarga se conserva la lista anterior, atenuada, para que la página no salte. -->
+      <ul
+        class="flex flex-col gap-3 transition-opacity"
+        [class.opacity-60]="cargando()"
+        [attr.aria-busy]="cargando()"
+      >
+        @for (orden of resultado.data; track orden.folio) {
+          <li><app-orden-card [orden]="orden" /></li>
+        }
+      </ul>
+    } @else if (resultado.meta.total > 0) {
+      <!-- Hay órdenes, pero la página pedida quedó fuera de rango (por ejemplo, tras cambiar de estado varias). -->
+      <app-estado-vacio
+        icono="last_page"
+        titulo="Esta página ya no tiene órdenes"
+        descripcion="El listado cambió mientras lo consultabas."
+      >
+        <button matButton="outlined" type="button" (click)="cambiarPagina(1)">
+          Ir a la primera página
+        </button>
+      </app-estado-vacio>
+    } @else if (filtro().estado) {
+      <app-estado-vacio
+        icono="filter_alt_off"
+        titulo="No hay órdenes en este estado"
+        descripcion="Prueba con otro estado o muestra todas las órdenes."
+      >
+        <button matButton="outlined" type="button" (click)="cambiarEstado(null)">Ver todas</button>
+      </app-estado-vacio>
+    } @else {
+      <app-estado-vacio
+        icono="inbox"
+        titulo="Aún no hay órdenes"
+        descripcion="Cuando exista una orden aparecerá en este listado."
+      >
+        @if (puedeCrear) {
+          <a matButton="filled" routerLink="/ordenes/nueva">Crear una orden</a>
+        }
+      </app-estado-vacio>
+    }
+
+    @if (resultado.meta.total > 0) {
+      <app-paginador
+        [meta]="resultado.meta"
+        [deshabilitado]="cargando()"
+        (cambioPagina)="cambiarPagina($event)"
+        (cambioLimite)="cambiarLimite($event)"
+      />
+    }
+  } @else {
+    <app-spinner mensaje="Cargando órdenes…" />
+  }
+</div>

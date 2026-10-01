@@ -1,0 +1,25 @@
+<div class="mx-auto flex max-w-2xl flex-col gap-5">
+  <header>
+    <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Nueva orden</h1>
+    <p class="mt-1 text-sm text-slate-600">
+      Indica el destino y el peso del paquete. La orden se asigna sola a un repartidor disponible
+      con capacidad; si no hay ninguno, queda en cola.
+    </p>
+  </header>
+
+  @if (resultado(); as creada) {
+    <app-resultado-orden [resultado]="creada" (crearOtra)="crearOtra()" />
+  } @else {
+    @if (error(); as fallo) {
+      <app-aviso tipo="error" [mensaje]="fallo.message" />
+    }
+
+    <section class="rounded-xl border border-slate-200 bg-white p-5" aria-label="Datos de la orden">
+      <app-orden-form
+        [enviando]="enviando()"
+        [erroresServidor]="erroresDeCampo()"
+        (crear)="crear($event)"
+      />
+    </section>
+  }
+</div>

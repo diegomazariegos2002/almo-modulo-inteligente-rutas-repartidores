@@ -1,0 +1,24 @@
+<ol class="flex flex-col">
+  @for (cambio of historial(); track cambio.estado; let ultimo = $last) {
+    <li class="relative flex gap-3 pb-4 last:pb-0">
+      <!-- Línea que une este cambio con el siguiente. -->
+      @if (!ultimo) {
+        <span
+          class="absolute top-3 bottom-0 left-[5px] w-px bg-slate-300"
+          aria-hidden="true"
+        ></span>
+      }
+      <span
+        class="relative mt-1.5 size-[11px] shrink-0 rounded-full border-2"
+        [class]="ultimo ? 'border-primary bg-primary' : 'border-slate-400 bg-white'"
+        aria-hidden="true"
+      ></span>
+      <div class="min-w-0 text-sm">
+        <p class="font-medium text-slate-900">{{ cambio.estadoDescripcion }}</p>
+        <time class="text-slate-600" [attr.datetime]="cambio.fecha.toISOString()">
+          {{ cambio.fecha | fechaLocal }}
+        </time>
+      </div>
+    </li>
+  }
+</ol>

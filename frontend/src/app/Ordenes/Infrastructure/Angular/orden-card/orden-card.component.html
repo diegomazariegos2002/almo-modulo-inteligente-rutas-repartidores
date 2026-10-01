@@ -1,0 +1,48 @@
+<article class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+  <div class="flex flex-col gap-3 p-4">
+    <header class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="font-mono text-sm font-semibold text-slate-900">{{ orden().folio }}</h2>
+      <app-estado-orden-badge [estado]="orden().estado" [descripcion]="orden().estadoDescripcion" />
+    </header>
+
+    <!-- Dos columnas en pantallas angostas; una sola fila de datos en escritorio. -->
+    <dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm md:grid-cols-5">
+      <div class="col-span-2">
+        <dt class="text-xs text-slate-600">Destino</dt>
+        <dd class="font-medium break-words text-slate-900">{{ orden().destino }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-600">Peso</dt>
+        <dd class="text-slate-900">{{ orden().peso | number: '1.0-2' }} kg</dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-600">Repartidor</dt>
+        <dd class="text-slate-900">{{ orden().repartidor?.nombre ?? 'Sin asignar' }}</dd>
+      </div>
+      <div class="col-span-2 md:col-span-1">
+        <dt class="text-xs text-slate-600">Creada</dt>
+        <dd class="text-slate-900">
+          <time [attr.datetime]="orden().creadaEn.toISOString()">
+            {{ orden().creadaEn | fechaLocal }}
+          </time>
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="border-t border-slate-200">
+    <button
+      type="button"
+      class="foco-visible flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-primary hover:bg-slate-50"
+      [attr.aria-expanded]="expandida()"
+      [attr.aria-controls]="idHistorial()"
+      (click)="expandida.set(!expandida())"
+    >
+      <span>{{ expandida() ? 'Ocultar historial' : 'Ver historial' }}</span>
+      <mat-icon aria-hidden="true">{{ expandida() ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </button>
+    <div class="px-4 pt-1 pb-4" [id]="idHistorial()" [hidden]="!expandida()">
+      <app-historial-timeline [historial]="orden().historial" />
+    </div>
+  </div>
+</article>

@@ -1,0 +1,66 @@
+<form class="flex flex-col gap-2" [formGroup]="formulario" novalidate (ngSubmit)="enviar()">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="mb-3">
+    <mat-label>Zona de referencia</mat-label>
+    <select matNativeControl formControlName="zona">
+      <option [ngValue]="null">Coordenadas manuales</option>
+      @for (zona of zonas; track zona.nombre) {
+        <option [ngValue]="zona">{{ zona.nombre }}</option>
+      }
+    </select>
+    <mat-hint>Al elegir una zona se llenan la latitud, la longitud y la dirección.</mat-hint>
+  </mat-form-field>
+
+  <div class="grid gap-x-4 gap-y-2 sm:grid-cols-2">
+    <mat-form-field appearance="outline">
+      <mat-label>Latitud</mat-label>
+      <input
+        matInput
+        type="number"
+        step="any"
+        formControlName="lat"
+        (input)="alEditarCoordenadas()"
+      />
+      <mat-hint>Entre {{ limites.latMin }} y {{ limites.latMax }}</mat-hint>
+      <mat-error>{{ mensajeDe('lat') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Longitud</mat-label>
+      <input
+        matInput
+        type="number"
+        step="any"
+        formControlName="lng"
+        (input)="alEditarCoordenadas()"
+      />
+      <mat-hint>Entre {{ limites.lngMin }} y {{ limites.lngMax }}</mat-hint>
+      <mat-error>{{ mensajeDe('lng') }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Peso</mat-label>
+    <input matInput type="number" step="any" inputmode="decimal" formControlName="peso" />
+    <span matTextSuffix>kg</span>
+    <mat-hint>Mayor que 0 y hasta {{ limites.pesoMaxKg }} kg</mat-hint>
+    <mat-error>{{ mensajeDe('peso') }}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Dirección de referencia (opcional)</mat-label>
+    <input matInput type="text" formControlName="direccion" autocomplete="off" />
+    <mat-hint align="end">
+      {{ formulario.controls.direccion.value.length }} / {{ limites.direccionMaxCaracteres }}
+    </mat-hint>
+    <mat-error>{{ mensajeDe('direccion') }}</mat-error>
+  </mat-form-field>
+
+  <div class="mt-2 flex justify-end">
+    <button matButton="filled" type="submit" [disabled]="enviando()">
+      @if (enviando()) {
+        <span class="giro-en-boton" aria-hidden="true"></span>
+      }
+      {{ enviando() ? 'Creando orden…' : 'Crear orden' }}
+    </button>
+  </div>
+</form>

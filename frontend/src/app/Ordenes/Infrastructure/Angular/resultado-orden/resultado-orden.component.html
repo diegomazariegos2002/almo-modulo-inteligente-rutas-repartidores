@@ -1,0 +1,67 @@
+<section
+  class="rounded-xl border p-5"
+  [class]="orden().enCola ? 'border-amber-200 bg-amber-50' : 'border-emerald-200 bg-emerald-50'"
+  role="status"
+>
+  <!-- El color va en el contenedor: el icono de Material hereda el color del texto. -->
+  <div
+    class="flex items-start gap-3"
+    [class]="orden().enCola ? 'text-amber-800' : 'text-emerald-800'"
+  >
+    <mat-icon class="shrink-0" aria-hidden="true">
+      {{ orden().enCola ? 'schedule' : 'check_circle' }}
+    </mat-icon>
+    <div class="min-w-0">
+      <h2 class="text-base font-semibold text-slate-900">
+        {{ orden().enCola ? 'Orden en cola' : 'Orden asignada' }}
+      </h2>
+      <p class="text-sm text-slate-800">{{ resultado().mensaje }}</p>
+    </div>
+  </div>
+
+  <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg bg-white p-4 text-sm sm:grid-cols-3">
+    <div>
+      <dt class="text-xs text-slate-600">Folio</dt>
+      <dd class="font-mono font-semibold text-slate-900">{{ orden().folio }}</dd>
+    </div>
+    <div>
+      <dt class="text-xs text-slate-600">Estado</dt>
+      <dd>
+        <app-estado-orden-badge
+          [estado]="orden().estado"
+          [descripcion]="orden().estadoDescripcion"
+        />
+      </dd>
+    </div>
+    <div>
+      <dt class="text-xs text-slate-600">Peso</dt>
+      <dd class="text-slate-900">{{ orden().peso | number: '1.0-2' }} kg</dd>
+    </div>
+    <div class="col-span-2 sm:col-span-3">
+      <dt class="text-xs text-slate-600">Destino</dt>
+      <dd class="break-words text-slate-900">{{ orden().destino }}</dd>
+    </div>
+    @if (orden().repartidor; as repartidor) {
+      <div>
+        <dt class="text-xs text-slate-600">Repartidor</dt>
+        <dd class="text-slate-900">{{ repartidor.nombre }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-600">Posición en su ruta</dt>
+        <dd class="text-slate-900">Parada {{ orden().secuenciaRuta }}</dd>
+      </div>
+    }
+  </dl>
+
+  @if (orden().enCola) {
+    <p class="mt-3 text-sm text-slate-800">
+      No hay un repartidor disponible con capacidad en este momento. La orden se asignará
+      automáticamente en cuanto uno se libere.
+    </p>
+  }
+
+  <div class="mt-4 flex flex-wrap gap-2">
+    <button matButton="filled" type="button" (click)="crearOtra.emit()">Crear otra orden</button>
+    <a matButton="outlined" routerLink="/ordenes">Ver órdenes</a>
+  </div>
+</section>

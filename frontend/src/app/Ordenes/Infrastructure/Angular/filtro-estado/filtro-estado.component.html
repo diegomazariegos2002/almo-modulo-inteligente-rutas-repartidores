@@ -1,0 +1,21 @@
+<fieldset class="min-w-0" [disabled]="deshabilitado()">
+  <legend class="mb-2 text-sm font-medium text-slate-700">Filtrar por estado</legend>
+  <div class="flex flex-wrap gap-2">
+    @for (opcion of opciones; track opcion.codigo) {
+      <label class="cursor-pointer">
+        <input
+          class="peer sr-only"
+          type="radio"
+          [name]="grupo"
+          [checked]="opcion.codigo === estado()"
+          (change)="cambio.emit(opcion.codigo)"
+        />
+        <span
+          class="inline-flex rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-on-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary peer-disabled:cursor-not-allowed peer-disabled:opacity-60"
+        >
+          {{ opcion.descripcion }}
+        </span>
+      </label>
+    }
+  </div>
+</fieldset>
