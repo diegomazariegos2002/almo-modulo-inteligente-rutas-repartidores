@@ -1,0 +1,13 @@
+// Esquema multi-archivo: aquí solo viven el generador y la fuente de datos.
+// Los modelos están en un archivo por dominio (rutas.prisma).
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["rutas"]
+}

@@ -1,0 +1,132 @@
+// =============================================================================
+// Dominio "rutas" — base de datos `almo_ruta`, esquema `rutas`.
+//
+// Nomenclatura (snake_case en todos los objetos):
+//   Tabla   ru_<nombre_en_singular>            ru = prefijo de la base `almo_ruta`
+//   Campo   <prefijo_tabla>_<campo>            rep_, usu_, ord_, oh_
+//   PK      pk_<tabla>                         FK   fk_<tabla>_<referencia>
+//   Único   uq_<tabla>_<campos>                Índ. idx_<tabla>_<campos>
+// Fechas siempre en TIMESTAMPTZ(3): se guardan en UTC sin depender del servidor.
+// PostgreSQL limita los identificadores a 63 caracteres.
+// =============================================================================
+
+enum RolUsuario {
+  CLIENTE
+  REPARTIDOR
+  ADMIN
+
+  @@map("rol_usuario")
+  @@schema("rutas")
+}
+
+enum EstadoRepartidor {
+  DISPONIBLE
+  EN_RUTA
+
+  @@map("estado_repartidor")
+  @@schema("rutas")
+}
+
+enum EstadoOrden {
+  PENDIENTE_ASIGNACION
+  ASIGNADA
+  EN_RUTA
+  ENTREGADA
+
+  @@map("estado_orden")
+  @@schema("rutas")
+}
+
+/// Repartidor con su posición actual y su capacidad de carga.
+model Repartidor {
+  id            Int              @id(map: "pk_ru_repartidor") @default(autoincrement()) @map("rep_id")
+  nombre        String           @map("rep_nombre") @db.VarChar(120)
+  /// Posición actual: se mueve al destino de cada parada entregada.
+  lat           Decimal          @map("rep_lat") @db.Decimal(9, 6)
+  lng           Decimal          @map("rep_lng") @db.Decimal(9, 6)
+  estado        EstadoRepartidor @default(DISPONIBLE) @map("rep_estado")
+  capacidadKg   Decimal          @map("rep_capacidad_kg") @db.Decimal(6, 2)
+  creadoEn      DateTime         @default(now()) @map("rep_creado_en") @db.Timestamptz(3)
+  actualizadoEn DateTime         @updatedAt @map("rep_actualizado_en") @db.Timestamptz(3)
+
+  usuario   Usuario?
+  ordenes   Orden[]
+  historial OrdenHistorial[]
+
+  // Camino caliente de la asignación: repartidores disponibles.
+  @@index([estado], map: "idx_ru_repartidor_rep_estado")
+  @@map("ru_repartidor")
+  @@schema("rutas")
+}
+
+/// Cuenta de acceso. Un usuario con rol REPARTIDOR se vincula a un repartidor.
+model Usuario {
+  id            String     @id(map: "pk_ru_usuario") @default(cuid()) @map("usu_id")
+  nombre        String     @map("usu_nombre") @db.VarChar(120)
+  correo        String     @unique(map: "uq_ru_usuario_usu_correo") @map("usu_correo") @db.VarChar(160)
+  passwordHash  String     @map("usu_password_hash")
+  rol           RolUsuario @map("usu_rol")
+  activo        Boolean    @default(true) @map("usu_activo")
+  creadoEn      DateTime   @default(now()) @map("usu_creado_en") @db.Timestamptz(3)
+  actualizadoEn DateTime   @updatedAt @map("usu_actualizado_en") @db.Timestamptz(3)
+
+  repartidorId Int?        @unique(map: "uq_ru_usuario_usu_repartidor_id") @map("usu_repartidor_id")
+  repartidor   Repartidor? @relation(fields: [repartidorId], references: [id], onDelete: Restrict, map: "fk_usuario_repartidor")
+
+  ordenes Orden[]
+
+  @@map("ru_usuario")
+  @@schema("rutas")
+}
+
+/// Orden de entrega. `folio` es el identificador público; `id` es interno.
+model Orden {
+  id            String      @id(map: "pk_ru_orden") @default(cuid()) @map("ord_id")
+  /// Lo genera la base con una secuencia: es único aunque lleguen órdenes en paralelo.
+  folio         String      @unique(map: "uq_ru_orden_ord_folio") @default(dbgenerated("('ORD-'::text || lpad((nextval('rutas.seq_ru_orden_folio'::regclass))::text, 6, '0'::text))")) @map("ord_folio") @db.VarChar(20)
+  lat           Decimal     @map("ord_lat") @db.Decimal(9, 6)
+  lng           Decimal     @map("ord_lng") @db.Decimal(9, 6)
+  pesoKg        Decimal     @map("ord_peso_kg") @db.Decimal(6, 2)
+  direccion     String?     @map("ord_direccion") @db.VarChar(120)
+  estado        EstadoOrden @default(PENDIENTE_ASIGNACION) @map("ord_estado")
+  /// Posición de la parada en la ruta optimizada; nula si está en cola o ya se entregó.
+  secuenciaRuta Int?        @map("ord_secuencia_ruta")
+  creadoEn      DateTime    @default(now()) @map("ord_creado_en") @db.Timestamptz(3)
+  actualizadoEn DateTime    @updatedAt @map("ord_actualizado_en") @db.Timestamptz(3)
+
+  clienteId String  @map("ord_cliente_id")
+  cliente   Usuario @relation(fields: [clienteId], references: [id], onDelete: Restrict, map: "fk_orden_cliente")
+
+  repartidorId Int?        @map("ord_repartidor_id")
+  repartidor   Repartidor? @relation(fields: [repartidorId], references: [id], onDelete: Restrict, map: "fk_orden_repartidor")
+
+  historial OrdenHistorial[]
+
+  // Listado filtrado por estado y cola FIFO de órdenes pendientes.
+  @@index([estado, creadoEn], map: "idx_ru_orden_ord_estado_ord_creado_en")
+  // Paradas pendientes y carga de un repartidor.
+  @@index([repartidorId, estado], map: "idx_ru_orden_ord_repartidor_id_ord_estado")
+  // Listado de "mis órdenes" de un cliente, de la más reciente a la más antigua.
+  @@index([clienteId, creadoEn], map: "idx_ru_orden_ord_cliente_id_ord_creado_en")
+  @@map("ru_orden")
+  @@schema("rutas")
+}
+
+/// Bitácora de cambios de estado: una fila por transición, nunca se actualiza.
+model OrdenHistorial {
+  /// Autoincremental para tener un orden estable aunque dos cambios compartan el milisegundo.
+  id     Int         @id(map: "pk_ru_orden_historial") @default(autoincrement()) @map("oh_id")
+  estado EstadoOrden @map("oh_estado")
+  fecha  DateTime    @default(now()) @map("oh_fecha") @db.Timestamptz(3)
+
+  ordenId String @map("oh_orden_id")
+  orden   Orden  @relation(fields: [ordenId], references: [id], onDelete: Cascade, map: "fk_orden_historial_orden")
+
+  /// Repartidor a cargo en el momento del cambio (nulo mientras la orden está en cola).
+  repartidorId Int?        @map("oh_repartidor_id")
+  repartidor   Repartidor? @relation(fields: [repartidorId], references: [id], onDelete: Restrict, map: "fk_orden_historial_repartidor")
+
+  @@index([ordenId], map: "idx_ru_orden_historial_oh_orden_id")
+  @@map("ru_orden_historial")
+  @@schema("rutas")
+}
