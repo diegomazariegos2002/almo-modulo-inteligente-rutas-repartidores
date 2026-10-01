@@ -1,0 +1,14 @@
+export { SecurityModule, SECURITY_OPTIONS } from './lib/security.module';
+export type { SecurityModuleOptions } from './lib/security.module';
+export { JwtAuthGuard } from './lib/guards/jwt-auth.guard';
+export { PermissionsGuard } from './lib/guards/permissions.guard';
+export { Public, IS_PUBLIC_KEY } from './lib/decorators/public.decorator';
+export { Permission, PERMISSION_KEY } from './lib/decorators/permission.decorator';
+export { CurrentUser } from './lib/decorators/current-user.decorator';
+export { ResourceOwnershipPort } from './lib/ports/resource-ownership.port';
+export type { OwnershipParams } from './lib/ports/resource-ownership.port';
+export { NoAutenticadoError, PermisoDenegadoError, RecursoAjenoError } from './lib/errors/security.errors';
+export type { UsuarioAutenticado } from './lib/interfaces/usuario-autenticado.interface';
+export { PERMISSIONS, ROLES, PERMISOS_POR_ROL, permisosDeRol, esRol } from './lib/constants';
+export type { Rol } from './lib/constants';
+export { hashPassword, verifyPassword } from './lib/password';
