@@ -1,0 +1,64 @@
+# =============================================================
+# nginx del frontend: sirve la SPA y reenvía /api al backend, de modo
+# que el navegador habla siempre con un único origen (sin CORS).
+#
+# La imagen oficial procesa este archivo con envsubst al arrancar;
+# solo se sustituye ${BACKEND_URL} (ver NGINX_ENVSUBST_FILTER en el Dockerfile).
+# =============================================================
+server {
+  listen 8080;
+  server_name _;
+
+  root /usr/share/nginx/html;
+  index index.html;
+
+  # No anuncia la versión de nginx en las respuestas ni en las páginas de error.
+  server_tokens off;
+
+  gzip on;
+  gzip_min_length 1024;
+  gzip_types text/plain text/css application/json application/javascript image/svg+xml;
+
+  # DNS interno de Docker. Con el destino en una variable, nginx resuelve el nombre
+  # en cada petición (según `valid`) en lugar de una sola vez al arrancar: así sigue
+  # funcionando si el contenedor del backend se recrea y cambia de IP.
+  resolver 127.0.0.11 valid=10s ipv6=off;
+  set $backend ${BACKEND_URL};
+
+  # ── API ────────────────────────────────────────────────────
+  # `^~` evita que las reglas por extensión de más abajo capturen rutas de la API
+  # (por ejemplo los .js de Swagger UI en /api/docs).
+  # Sin add_header: las cabeceras de seguridad de la API las pone el propio backend.
+  location ^~ /api/ {
+    proxy_pass $backend;
+    proxy_http_version 1.1;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 30s;
+  }
+
+  # ── Comprobación de salud del contenedor ───────────────────
+  location = /healthz {
+    access_log off;
+    default_type text/plain;
+    return 200 'ok';
+  }
+
+  # ── Archivos con hash en el nombre: se pueden cachear sin caducidad ──
+  location ~* \.(?:js|css|woff2?|ttf|svg|png|ico)$ {
+    include /etc/nginx/snippets/security-headers.conf;
+    add_header Cache-Control "public, max-age=31536000, immutable" always;
+    try_files $uri =404;
+  }
+
+  # ── SPA: cualquier otra ruta la resuelve el router de Angular ──
+  location / {
+    include /etc/nginx/snippets/security-headers.conf;
+    # index.html no lleva hash: debe revalidarse para ver cada despliegue.
+    add_header Cache-Control "no-cache" always;
+    try_files $uri $uri/ /index.html;
+  }
+}

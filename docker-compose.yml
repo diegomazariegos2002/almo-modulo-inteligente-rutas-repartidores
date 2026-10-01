@@ -1,0 +1,108 @@
+# =============================================================
+# Todo el sistema con un solo comando:
+#
+#   docker compose up --build
+#
+#   Frontend ............ http://localhost:8080
+#   API ................. http://localhost:3000/api
+#   Swagger ............. http://localhost:3000/api/docs
+#   PostgreSQL .......... localhost:5434  (base almo_ruta, esquema rutas)
+#
+# Orden de arranque: postgres + redis → migrator (migraciones y datos de
+# demostración, termina solo) → backend → frontend.
+#
+# No hace falta configurar nada: todos los valores tienen un valor por defecto
+# pensado para evaluar la prueba. Para cambiar un puerto o un secreto, copiar
+# .env.example a .env y editarlo.
+# =============================================================
+name: almo-rutas
+
+x-database-url: &database-url postgresql://${POSTGRES_USER:-almo}:${POSTGRES_PASSWORD:-almo_dev_2026}@postgres:5432/almo_ruta
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - '${POSTGRES_PORT:-5434}:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-almo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-almo_dev_2026}
+      POSTGRES_DB: almo_ruta
+      TZ: UTC
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d almo_ruta']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Caché de la ruta calculada de cada repartidor. No se publica al host: solo la usa el backend.
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    command: ['redis-server', '--requirepass', '${REDIS_PASSWORD:-almo_redis_dev_2026}', '--save', '', '--appendonly', 'no']
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli -a "${REDIS_PASSWORD:-almo_redis_dev_2026}" --no-auth-warning ping | grep -q PONG']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Un solo uso: aplica las migraciones pendientes y siembra los datos de demostración.
+  # Es idempotente, así que no importa cuántas veces se levante el sistema.
+  migrator:
+    build:
+      context: ./backend
+      target: migrator
+    restart: 'no'
+    environment:
+      DATABASE_URL: *database-url
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ./backend
+      target: runtime
+    restart: unless-stopped
+    init: true
+    ports:
+      - '${BACKEND_PORT:-3000}:3000'
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: *database-url
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-almo_redis_dev_2026}
+      CACHE_TTL_RUTA_SECONDS: 300
+      # Secreto de demostración: en un despliegue real se inyecta desde un gestor de secretos.
+      JWT_SECRET: ${JWT_SECRET:-secreto-de-demostracion-cambiar-fuera-de-la-prueba-2026}
+      JWT_EXPIRES_IN_SECONDS: 28800
+      # Swagger queda activo para poder probar la API desde el navegador.
+      ENABLE_SWAGGER: 'true'
+      # El frontend llega por el proxy de nginx (mismo origen); CORS solo importa
+      # si se usa `ng serve` (4200) contra este backend.
+      ALLOWED_ORIGINS: http://localhost:${FRONTEND_PORT:-8080},http://localhost:4200
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    ports:
+      - '${FRONTEND_PORT:-8080}:8080'
+    environment:
+      BACKEND_URL: http://backend:3000
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  postgres-data:

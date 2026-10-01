@@ -1,0 +1,17 @@
+# Lo que no debe entrar al contexto de construcción de la imagen.
+
+# Se instalan y se compilan dentro de la imagen
+node_modules
+dist
+coverage
+storybook-static
+.angular
+
+# No aportan nada a la imagen
+.git
+.vscode
+.idea
+*.log
+*.md
+Dockerfile
+.dockerignore
