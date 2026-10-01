@@ -1,0 +1,12 @@
+<div
+  class="flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center"
+>
+  <span class="flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+    <mat-icon aria-hidden="true">{{ icono() }}</mat-icon>
+  </span>
+  <p class="text-base font-semibold text-slate-900">{{ titulo() }}</p>
+  @if (descripcion(); as texto) {
+    <p class="max-w-sm text-sm text-slate-600">{{ texto }}</p>
+  }
+  <div class="mt-2 empty:hidden"><ng-content /></div>
+</div>

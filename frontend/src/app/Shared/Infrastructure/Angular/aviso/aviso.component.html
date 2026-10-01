@@ -1,0 +1,11 @@
+<div
+  class="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border px-4 py-3 text-sm"
+  [class]="apariencia().clases"
+  [attr.role]="rol()"
+>
+  <mat-icon class="icono-20 shrink-0" aria-hidden="true">{{ apariencia().icono }}</mat-icon>
+  <p class="min-w-0 flex-1 basis-48">{{ mensaje() }}</p>
+  @if (accion(); as etiqueta) {
+    <button matButton="outlined" type="button" (click)="accionado.emit()">{{ etiqueta }}</button>
+  }
+</div>

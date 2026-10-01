@@ -1,0 +1,45 @@
+<nav
+  class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 text-sm text-slate-700"
+  aria-label="Paginación"
+>
+  <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+    <p aria-live="polite">
+      Mostrando <span class="font-semibold text-slate-900">{{ rango() }}</span>
+    </p>
+
+    <label class="flex items-center gap-2">
+      <span>Por página</span>
+      <select
+        class="foco-visible rounded-md border border-slate-300 bg-white px-2 py-1.5 text-slate-900 disabled:opacity-60"
+        [disabled]="deshabilitado()"
+        (change)="alElegirLimite($event)"
+      >
+        @for (tamano of tamanos(); track tamano) {
+          <option [value]="tamano" [selected]="tamano === meta().limit">{{ tamano }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  <div class="flex items-center gap-1">
+    <button
+      matIconButton
+      type="button"
+      aria-label="Página anterior"
+      [disabled]="deshabilitado() || !meta().hasPreviousPage"
+      (click)="cambioPagina.emit(meta().page - 1)"
+    >
+      <mat-icon aria-hidden="true">chevron_left</mat-icon>
+    </button>
+    <span class="min-w-24 text-center">Página {{ meta().page }} de {{ meta().totalPages }}</span>
+    <button
+      matIconButton
+      type="button"
+      aria-label="Página siguiente"
+      [disabled]="deshabilitado() || !meta().hasNextPage"
+      (click)="cambioPagina.emit(meta().page + 1)"
+    >
+      <mat-icon aria-hidden="true">chevron_right</mat-icon>
+    </button>
+  </div>
+</nav>

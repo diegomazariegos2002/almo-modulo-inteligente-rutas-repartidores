@@ -1,0 +1,59 @@
+<div class="flex min-h-dvh flex-col">
+  <header class="sticky top-0 z-10 border-b border-slate-200 bg-white">
+    <div class="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
+      <a class="foco-visible rounded-lg" routerLink="/" aria-label="Rutas, ir al inicio">
+        <app-logo />
+      </a>
+
+      <!-- El enlace activo se marca con aria-current y de ese atributo sale su estilo. -->
+      <nav class="hidden items-center gap-1 md:flex" aria-label="Principal">
+        @for (enlace of enlaces(); track enlace.ruta) {
+          <a
+            class="foco-visible rounded-full px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 aria-[current=page]:bg-teal-50 aria-[current=page]:text-primary"
+            routerLinkActive
+            ariaCurrentWhenActive="page"
+            [routerLink]="enlace.ruta"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            {{ enlace.etiqueta }}
+          </a>
+        }
+      </nav>
+
+      @if (usuario(); as actual) {
+        <div class="ml-auto flex min-w-0 items-center gap-1">
+          <div class="min-w-0 text-right leading-tight">
+            <p class="truncate text-sm font-medium text-slate-900">{{ actual.nombre }}</p>
+            <p class="truncate text-xs text-slate-600">{{ actual.rolDescripcion }}</p>
+          </div>
+          <button matIconButton type="button" aria-label="Cerrar sesión" (click)="salir()">
+            <mat-icon aria-hidden="true">logout</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  </header>
+
+  <!-- El margen inferior deja sitio a la barra de navegación fija en pantallas angostas. -->
+  <main class="mx-auto w-full max-w-6xl flex-1 px-4 pt-6 pb-24 md:pb-10">
+    <router-outlet />
+  </main>
+
+  <nav
+    class="fixed inset-x-0 bottom-0 z-10 flex border-t border-slate-200 bg-white md:hidden"
+    aria-label="Principal"
+  >
+    @for (enlace of enlaces(); track enlace.ruta) {
+      <a
+        class="foco-visible flex flex-1 flex-col items-center gap-0.5 px-2 py-2 text-xs font-medium text-slate-700 aria-[current=page]:text-primary"
+        routerLinkActive
+        ariaCurrentWhenActive="page"
+        [routerLink]="enlace.ruta"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <mat-icon aria-hidden="true">{{ enlace.icono }}</mat-icon>
+        {{ enlace.etiqueta }}
+      </a>
+    }
+  </nav>
+</div>
