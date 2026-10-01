@@ -1,0 +1,59 @@
+<form class="flex flex-col gap-2" [formGroup]="formulario" novalidate (ngSubmit)="enviar()">
+  @if (error(); as mensaje) {
+    <app-aviso class="mb-2" tipo="error" [mensaje]="mensaje" />
+  }
+
+  <mat-form-field appearance="outline">
+    <mat-label>Correo</mat-label>
+    <input matInput type="email" formControlName="correo" autocomplete="username" />
+    <mat-error>
+      {{
+        formulario.controls.correo.hasError('required')
+          ? 'Ingresa tu correo.'
+          : 'El correo no tiene un formato válido.'
+      }}
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Contraseña</mat-label>
+    <input matInput type="password" formControlName="password" autocomplete="current-password" />
+    <mat-error>Ingresa tu contraseña.</mat-error>
+  </mat-form-field>
+
+  <button matButton="filled" type="submit" [disabled]="enviando()">
+    @if (enviando()) {
+      <span class="giro-en-boton" aria-hidden="true"></span>
+    }
+    {{ enviando() ? 'Ingresando…' : 'Ingresar' }}
+  </button>
+</form>
+
+@if (cuentasDemo().length > 0) {
+  <section class="mt-6 border-t border-slate-200 pt-5" aria-labelledby="titulo-cuentas-demo">
+    <h2 id="titulo-cuentas-demo" class="text-sm font-semibold text-slate-900">
+      Cuentas de demostración
+    </h2>
+    <p class="mt-1 text-sm text-slate-600">Elige una para llenar el formulario.</p>
+
+    <ul class="mt-3 flex flex-col gap-2">
+      @for (cuenta of cuentasDemo(); track cuenta.correo) {
+        <li>
+          <button
+            type="button"
+            class="foco-visible flex w-full items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left hover:border-slate-400"
+            (click)="usarCuenta(cuenta)"
+          >
+            <span class="min-w-0">
+              <span class="block truncate text-sm font-medium text-slate-900">
+                {{ cuenta.nombre }}
+              </span>
+              <span class="block truncate text-xs text-slate-600">{{ cuenta.correo }}</span>
+            </span>
+            <app-badge [etiqueta]="descripcionRol[cuenta.rol]" />
+          </button>
+        </li>
+      }
+    </ul>
+  </section>
+}
