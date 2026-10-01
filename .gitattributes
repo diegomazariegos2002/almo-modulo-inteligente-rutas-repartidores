@@ -1,0 +1,10 @@
+# Fines de línea LF en todo el repositorio, también en Windows:
+# los scripts que corren dentro de contenedores Linux fallan con CRLF.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.woff binary
+*.woff2 binary

@@ -1,0 +1,21 @@
+# Red de seguridad común; backend/ y frontend/ tienen además su propio .gitignore.
+
+# Dependencias y salidas de compilación
+node_modules/
+dist/
+coverage/
+storybook-static/
+.nx/
+.angular/
+
+# Variables de entorno reales (los .env.example sí se versionan)
+.env
+.env.*
+!.env.example
+
+# Sistema operativo, editores y herramientas locales
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.claude/
