@@ -1,0 +1,59 @@
+<div class="flex flex-col gap-5">
+  <header class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Despacho</h1>
+      <p class="mt-1 text-sm text-slate-600">
+        Estado y carga de cada repartidor. Elige uno para consultar su ruta.
+      </p>
+    </div>
+    <button matButton="outlined" type="button" [disabled]="cargando()" (click)="actualizar()">
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+      Actualizar
+    </button>
+  </header>
+
+  <section class="flex flex-col gap-3" aria-labelledby="titulo-repartidores">
+    <h2 id="titulo-repartidores" class="text-base font-semibold text-slate-900">Repartidores</h2>
+
+    @if (error(); as mensaje) {
+      <app-aviso tipo="error" accion="Reintentar" [mensaje]="mensaje" (accionado)="cargar()" />
+    } @else if (repartidores(); as lista) {
+      @if (lista.length === 0) {
+        <app-estado-vacio icono="groups" titulo="No hay repartidores registrados" />
+      } @else {
+        <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          @for (repartidor of lista; track repartidor.id) {
+            <li>
+              <app-repartidor-card
+                [repartidor]="repartidor"
+                [seleccionado]="repartidor.id === seleccionadoId()"
+                (seleccionar)="verRuta($event)"
+              />
+            </li>
+          }
+        </ul>
+      }
+    } @else {
+      <app-spinner mensaje="Cargando repartidores…" />
+    }
+  </section>
+
+  <!-- `scroll-mt` evita que la cabecera fija tape el inicio de la sección al desplazarse. -->
+  <section #seccionRuta class="flex scroll-mt-20 flex-col gap-3" aria-labelledby="titulo-ruta">
+    <h2 id="titulo-ruta" class="text-base font-semibold text-slate-900">Ruta del repartidor</h2>
+
+    @if (errorRuta(); as mensaje) {
+      <app-aviso tipo="error" [mensaje]="mensaje" />
+    } @else if (ruta(); as actual) {
+      <app-ruta-detalle [ruta]="actual" [soloLectura]="true" />
+    } @else if (cargandoRuta()) {
+      <app-spinner mensaje="Cargando ruta…" />
+    } @else {
+      <app-estado-vacio
+        icono="route"
+        titulo="Elige un repartidor"
+        descripcion="Pulsa «Ver ruta» en un repartidor para ver sus paradas en orden de visita."
+      />
+    }
+  </section>
+</div>

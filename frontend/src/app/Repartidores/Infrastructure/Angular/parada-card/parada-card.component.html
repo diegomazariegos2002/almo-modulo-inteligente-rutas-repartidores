@@ -1,0 +1,63 @@
+<article class="flex gap-3 rounded-xl border border-slate-200 bg-white p-4">
+  <span
+    class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-on-primary"
+    aria-hidden="true"
+  >
+    {{ parada().secuencia }}
+  </span>
+
+  <div class="flex min-w-0 flex-1 flex-col gap-2">
+    <header class="flex flex-wrap items-center justify-between gap-2">
+      <h3 class="text-sm font-semibold text-slate-900">
+        <!-- `&ngsp;` conserva el espacio entre los dos textos, que Angular quitaría al compilar. -->
+        <span class="sr-only">Parada {{ parada().secuencia }}:</span>&ngsp;
+        <span class="font-mono">{{ parada().folio }}</span>
+      </h3>
+      <app-estado-orden-badge
+        [estado]="parada().estado"
+        [descripcion]="parada().estadoDescripcion"
+      />
+    </header>
+
+    <p class="font-medium break-words text-slate-900">{{ parada().destino }}</p>
+
+    <p class="flex items-center gap-1.5 text-sm text-slate-700">
+      <mat-icon class="icono-16 shrink-0" aria-hidden="true">straighten</mat-icon>
+      <span>
+        <strong class="font-semibold text-slate-900">
+          {{ parada().distanciaDesdeAnteriorKm | number: '1.0-2' }} km
+        </strong>
+        {{ primera() ? 'desde la posición actual' : 'desde la parada anterior' }}
+      </span>
+    </p>
+
+    <dl class="flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-700">
+      <div class="flex gap-1">
+        <dt>Acumulado:</dt>
+        <dd class="text-slate-900">{{ parada().distanciaAcumuladaKm | number: '1.0-2' }} km</dd>
+      </div>
+      <div class="flex gap-1">
+        <dt>Peso:</dt>
+        <dd class="text-slate-900">{{ parada().peso | number: '1.0-2' }} kg</dd>
+      </div>
+    </dl>
+
+    @if (mostrarAccion()) {
+      <div class="mt-1 flex justify-end">
+        <button
+          matButton="filled"
+          type="button"
+          [disabled]="ocupada() || enviando()"
+          (click)="entregar.emit(parada().folio)"
+        >
+          @if (enviando()) {
+            <span class="giro-en-boton" aria-hidden="true"></span>
+          }
+          {{ enviando() ? 'Marcando entregada…' : 'Marcar entregada' }}
+          <!-- Distingue este botón del de las demás paradas para quien no ve la tarjeta. -->
+          <span class="sr-only">la orden {{ parada().folio }}</span>
+        </button>
+      </div>
+    }
+  </div>
+</article>

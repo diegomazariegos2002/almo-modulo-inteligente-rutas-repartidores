@@ -1,0 +1,28 @@
+<article
+  class="flex flex-col gap-3 rounded-xl border bg-white p-4"
+  [class]="seleccionado() ? 'border-primary ring-1 ring-primary' : 'border-slate-200'"
+>
+  <header class="flex flex-wrap items-center justify-between gap-2">
+    <h3 class="text-base font-semibold text-slate-900">{{ repartidor().nombre }}</h3>
+    <app-estado-repartidor-badge
+      [estado]="repartidor().estado"
+      [descripcion]="repartidor().estadoDescripcion"
+    />
+  </header>
+
+  <app-barra-carga [repartidor]="repartidor()" />
+
+  <footer class="flex flex-wrap items-center justify-between gap-2">
+    <span class="text-sm text-slate-600">{{ paradas() }}</span>
+    <button
+      [matButton]="seleccionado() ? 'filled' : 'outlined'"
+      type="button"
+      [attr.aria-pressed]="seleccionado()"
+      (click)="seleccionar.emit(repartidor().id)"
+    >
+      Ver ruta
+      <!-- Distingue este botón del de los demás repartidores para quien no ve la tarjeta. -->
+      <span class="sr-only">de {{ repartidor().nombre }}</span>
+    </button>
+  </footer>
+</article>

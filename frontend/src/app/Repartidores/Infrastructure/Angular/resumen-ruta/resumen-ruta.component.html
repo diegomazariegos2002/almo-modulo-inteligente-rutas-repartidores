@@ -1,0 +1,36 @@
+<section class="rounded-xl border border-slate-200 bg-white p-4" aria-label="Resumen de la ruta">
+  <header class="flex flex-wrap items-center justify-between gap-2">
+    <div class="min-w-0">
+      <p class="text-xs text-slate-600">Repartidor</p>
+      <h2 class="text-lg font-semibold text-slate-900">{{ ruta().repartidor.nombre }}</h2>
+    </div>
+    <app-estado-repartidor-badge
+      [estado]="ruta().repartidor.estado"
+      [descripcion]="ruta().repartidor.estadoDescripcion"
+    />
+  </header>
+
+  <div class="mt-4 grid gap-4 sm:grid-cols-2">
+    <app-barra-carga [repartidor]="ruta().repartidor" />
+
+    <dl class="grid grid-cols-2 gap-4 text-sm">
+      <div>
+        <dt class="text-slate-600">Paradas pendientes</dt>
+        <dd class="text-xl font-semibold text-slate-900">{{ ruta().totalParadas }}</dd>
+      </div>
+      <div>
+        <dt class="text-slate-600">Distancia total</dt>
+        <dd class="text-xl font-semibold text-slate-900">
+          {{ ruta().distanciaTotalKm | number: '1.0-2' }} km
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <p class="mt-4 text-xs text-slate-600">
+    Ruta calculada el
+    <time [attr.datetime]="ruta().calculadaEn.toISOString()">
+      {{ ruta().calculadaEn | fechaLocal }}
+    </time>
+  </p>
+</section>

@@ -1,0 +1,16 @@
+<div class="flex flex-col gap-1.5">
+  <p class="flex items-baseline justify-between gap-2 text-sm">
+    <span class="text-slate-600">Carga</span>
+    <span class="font-medium text-slate-900">
+      {{ repartidor().cargaKg | number: '1.0-2' }} de
+      {{ repartidor().capacidadKg | number: '1.0-2' }} kg
+    </span>
+  </p>
+  <!-- La barra es decorativa: el dato ya está en el texto de arriba. -->
+  <div class="h-2 overflow-hidden rounded-full bg-slate-200" aria-hidden="true">
+    <div
+      class="h-full rounded-full bg-primary"
+      [style.width.%]="repartidor().porcentajeCarga"
+    ></div>
+  </div>
+</div>

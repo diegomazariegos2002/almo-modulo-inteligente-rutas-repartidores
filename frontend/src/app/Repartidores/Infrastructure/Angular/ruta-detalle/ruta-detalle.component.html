@@ -1,0 +1,40 @@
+<div class="flex flex-col gap-4">
+  <app-resumen-ruta [ruta]="ruta()" />
+
+  @if (mostrarInicio()) {
+    <div
+      class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-teal-200 bg-teal-50 p-4"
+    >
+      <p class="min-w-0 flex-1 basis-60 text-sm text-slate-800">
+        Al salir, todas las paradas pasan a «En ruta» y no se asignan órdenes nuevas hasta terminar
+        la ruta.
+      </p>
+      <button matButton="filled" type="button" [disabled]="ocupada()" (click)="iniciar.emit()">
+        @if (iniciando()) {
+          <span class="giro-en-boton" aria-hidden="true"></span>
+        }
+        {{ iniciando() ? 'Iniciando ruta…' : 'Iniciar ruta' }}
+      </button>
+    </div>
+  }
+
+  <div class="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+    <section class="flex flex-col gap-3" aria-labelledby="titulo-paradas">
+      <h2 id="titulo-paradas" class="text-base font-semibold text-slate-900">
+        Paradas en orden de visita
+      </h2>
+      <app-lista-paradas
+        [paradas]="ruta().paradas"
+        [soloLectura]="soloLectura()"
+        [ocupada]="ocupada()"
+        [folioEnCurso]="folioEnCurso()"
+        (entregar)="entregar.emit($event)"
+      />
+    </section>
+
+    @if (!ruta().vacia) {
+      <!-- En pantallas angostas el mapa va antes de la lista; en escritorio, a su derecha. -->
+      <app-mapa-ruta class="order-first lg:sticky lg:top-20 lg:order-last" [ruta]="ruta()" />
+    }
+  </div>
+</div>

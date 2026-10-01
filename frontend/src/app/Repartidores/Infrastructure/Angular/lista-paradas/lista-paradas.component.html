@@ -1,0 +1,22 @@
+@if (paradas().length === 0) {
+  <app-estado-vacio
+    icono="route"
+    titulo="Sin paradas pendientes"
+    descripcion="Las órdenes nuevas se agregan a la ruta en cuanto se asignan."
+  />
+} @else {
+  <ol class="flex flex-col gap-3">
+    @for (parada of paradas(); track parada.folio; let primera = $first) {
+      <li>
+        <app-parada-card
+          [parada]="parada"
+          [primera]="primera"
+          [soloLectura]="soloLectura()"
+          [ocupada]="ocupada()"
+          [enviando]="folioEnCurso() === parada.folio"
+          (entregar)="entregar.emit($event)"
+        />
+      </li>
+    }
+  </ol>
+}

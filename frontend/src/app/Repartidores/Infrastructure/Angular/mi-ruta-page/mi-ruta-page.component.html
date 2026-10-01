@@ -1,0 +1,44 @@
+<div class="flex flex-col gap-5">
+  <header class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Mi ruta</h1>
+      <p class="mt-1 text-sm text-slate-600">
+        Tus paradas pendientes, en el orden de visita calculado para recorrer menos distancia.
+      </p>
+    </div>
+    @if (repartidorId !== null) {
+      <button matButton="outlined" type="button" [disabled]="ocupada()" (click)="actualizar()">
+        <mat-icon aria-hidden="true">refresh</mat-icon>
+        Actualizar
+      </button>
+    }
+  </header>
+
+  @if (repartidorId === null) {
+    <app-estado-vacio
+      icono="person_off"
+      titulo="Tu usuario no está vinculado a un repartidor"
+      descripcion="Solo los repartidores tienen una ruta propia."
+    />
+  } @else {
+    @if (aviso(); as resultado) {
+      <app-aviso [tipo]="resultado.tipo" [mensaje]="resultado.mensaje" />
+    }
+
+    @if (error(); as mensaje) {
+      <app-aviso tipo="error" accion="Reintentar" [mensaje]="mensaje" (accionado)="cargar()" />
+    } @else if (ruta(); as actual) {
+      <app-ruta-detalle
+        [ruta]="actual"
+        [soloLectura]="!puedeOperar"
+        [ocupada]="ocupada()"
+        [iniciando]="iniciando()"
+        [folioEnCurso]="folioEnCurso()"
+        (iniciar)="iniciarRuta()"
+        (entregar)="entregar($event)"
+      />
+    } @else {
+      <app-spinner mensaje="Cargando tu ruta…" />
+    }
+  }
+</div>
